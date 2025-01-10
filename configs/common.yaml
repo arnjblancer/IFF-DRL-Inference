@@ -1,0 +1,40 @@
+dataDir: Incremental_Data
+dataSetName: N225  || DJI || HSI ||FCHI ||SP500 || N225 || KS11
+ValDataName: N225
+normalization: True
+time:
+    train_startingDate: '2007-01-01'
+    train_endingDate: '2020-12-31'
+    test_startingDate: '2021-01-01'
+    test_endingDate: '2023-12-31'
+agent:
+    algorithm: DDQN  #PPO| A2C| DDQN
+    model: TimesNet
+    buffer_size: 10000
+    RewardLength: 5
+    ModelPath: 'result/Trained_Model/DDQN_N225.pth' # FOR TESTING
+input:
+    length: 20
+    start_point: 100
+output:
+    length: 5
+rewardDay: 5 #最大的reward天数
+device: cuda
+modelSavePerEpoch: 5 #多少轮保存一次权重
+train:
+    epochs: 100
+    init_money: 500000
+    EPS_START: 0.9
+    EPS_END: 0.05
+    EPS_DECAY: 200
+    lr: 0.001
+    gamma: 0.9
+    batch_size: 32
+    max_batch_size: 1000  #最大的batch_size
+    train_interval: 10
+    target_update: 10
+    reward: MinMax
+    csv: False
+    learn: False
+expName: TEST #
+
