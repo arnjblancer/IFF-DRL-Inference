@@ -14,8 +14,8 @@ top_k: 3 #3
 e_layers: 2 #2
 d_layers: 1
 
-enc_in: 10
-c_out: 10
+enc_in: 5
+c_out: 5
 d_model: 128
 embed: timeF
 freq: d

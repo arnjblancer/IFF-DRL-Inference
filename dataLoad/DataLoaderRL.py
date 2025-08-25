@@ -2,9 +2,14 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-from torch.utils.data.dataset import T_co
 from operator import itemgetter
+from typing import TypeVar
 from dataLoad.utils import preProcessor
+
+# ``T_co`` was moved in newer versions of PyTorch.  Define it locally to
+# retain compatibility with both older and newer releases without pulling
+# it from ``torch.utils.data.dataset`` which may not expose it.
+T_co = TypeVar("T_co", covariant=True)
 
 class RLDataSet(Dataset):
 
