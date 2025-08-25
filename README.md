@@ -7,7 +7,7 @@ This project is a reinforcement learning-based stock trading system. It allows y
 Before running the project, make sure you have the following dependencies installed:
 
 * Python 3.9.12
-* PyTorch 1.12.1
+* PyTorch 2.8.0
 * OmegaConf
 * Tqdm
 * Numpy
