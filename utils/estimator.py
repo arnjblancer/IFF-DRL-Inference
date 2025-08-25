@@ -196,9 +196,13 @@ class PerformanceEstimator:
 
         # 计算图片大小
         font = ImageFont.truetype("arial.ttf", 14)
-        max_width = max(font.getsize(row)[0] for row in table.split('\n'))
-        width, height = font.getsize(table.split('\n')[0])
-        height *= len(table.split('\n')) + 5  # 增加5行的高度
+        max_width = max(
+            font.getbbox(row)[2] - font.getbbox(row)[0]
+            for row in table.split('\n')
+        )
+        bbox = font.getbbox(table.split('\n')[0])
+        width = bbox[2] - bbox[0]
+        height = (bbox[3] - bbox[1]) * (len(table.split('\n')) + 5)  # 增加5行的高度
 
         # 创建图片对象并绘制表格
         img = Image.new('RGB', (max_width, height), color='white')
@@ -211,9 +215,13 @@ class PerformanceEstimator:
     def as_image(self, table, estimateSavePath):
 
         font = ImageFont.load_default()
-        max_width = max(font.getsize(row)[0] for row in table.split('\n'))
-        width, height = font.getsize(table.split('\n')[0])
-        height *= len(table.split('\n')) + 5  # 增加5行的高度
+        max_width = max(
+            font.getbbox(row)[2] - font.getbbox(row)[0]
+            for row in table.split('\n')
+        )
+        bbox = font.getbbox(table.split('\n')[0])
+        width = bbox[2] - bbox[0]
+        height = (bbox[3] - bbox[1]) * (len(table.split('\n')) + 5)  # 增加5行的高度
 
         # 创建图片对象并绘制表格
         img = Image.new('RGB', (max_width, height), color='white')

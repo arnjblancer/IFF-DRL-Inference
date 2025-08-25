@@ -56,7 +56,7 @@ class RLDataSet(Dataset):
     def __len__(self):
         return self.length-1
 
-    def __getitem__(self, index) -> T_co:
+    def __getitem__(self, index):
         return self.datas[index], self.PriceTMinus1[index], self.PriceT[index], self.PriceTPlusN[index], self.datas[index+1], self.mask[index], self.mask[index+1]  #self.predict_datas[index],self.predict_datas[index+1], self.day_values[index], self.week_values[index]
 
 def stock_fn(batch):
