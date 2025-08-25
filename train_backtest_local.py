@@ -1,4 +1,3 @@
-import argparse
 import os
 from datetime import datetime
 
@@ -14,35 +13,31 @@ from utils.estimator import PerformanceEstimator
 from utils.utils import setup_seed
 
 
-def train_and_backtest(args) -> None:
-    """Train an agent on a local CSV file and run a backtest."""
+def train_and_backtest() -> None:
+    """Train an agent on a local CSV file and run a backtest.
+
+    All configuration is loaded from ``configs/common.yaml`` without
+    additional command-line overrides.
+    """
     setup_seed(1)
     cfg = OmegaConf.load("configs/common.yaml")
-    cfg.dataSetName = args.data_name
-    cfg.ValDataName = args.data_name
-    cfg.time.train_startingDate = args.train_start
-    cfg.time.train_endingDate = args.train_end
-    cfg.time.test_startingDate = args.test_start
-    cfg.time.test_endingDate = args.test_end
-    cfg.agent.ModelPath = os.path.join("result", f"{args.data_name}_{cfg.agent.algorithm}.pth")
-    cfg.device = "cpu"
 
-    data_path = os.path.join(cfg.dataDir, f"{args.data_name}.csv")
+    data_path = os.path.join(cfg.dataDir, f"{cfg.dataSetName}.csv")
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"{data_path} not found")
 
     train_dataset = RLDataSet(
         csvFilePath=data_path,
-        startDate=datetime.strptime(args.train_start, "%Y-%m-%d"),
-        endDate=datetime.strptime(args.train_end, "%Y-%m-%d"),
+        startDate=datetime.strptime(cfg.time.train_startingDate, "%Y-%m-%d"),
+        endDate=datetime.strptime(cfg.time.train_endingDate, "%Y-%m-%d"),
         cfg=cfg,
     )
     train_loader = DataLoader(train_dataset, batch_size=1, collate_fn=stock_fn)
 
     test_dataset = RLDataSet(
         csvFilePath=data_path,
-        startDate=datetime.strptime(args.test_start, "%Y-%m-%d"),
-        endDate=datetime.strptime(args.test_end, "%Y-%m-%d"),
+        startDate=datetime.strptime(cfg.time.test_startingDate, "%Y-%m-%d"),
+        endDate=datetime.strptime(cfg.time.test_endingDate, "%Y-%m-%d"),
         cfg=cfg,
     )
     test_loader = DataLoader(test_dataset, batch_size=1, collate_fn=stock_fn)
@@ -50,7 +45,9 @@ def train_and_backtest(args) -> None:
     env = TradingEnv(cfg, init_money=cfg.train.init_money)
     agent = DDQN(cfg)
 
-    for epoch in range(args.epochs):
+    os.makedirs(os.path.dirname(cfg.agent.ModelPath), exist_ok=True)
+
+    for epoch in range(cfg.train.epochs):
         env.reset(len(train_loader))
         for iteration, batch in enumerate(train_loader):
             datas, price_tm1, price_t, price_tpn, datas_next, mask, mask_next = [i.to(cfg.device) for i in batch]
@@ -92,12 +89,4 @@ def train_and_backtest(args) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Train and backtest an RL trading agent using local CSV data")
-    parser.add_argument("--data_name", required=True, help="CSV file name located in Incremental_Data without extension")
-    parser.add_argument("--train_start", required=True, help="Training start date (YYYY-MM-DD)")
-    parser.add_argument("--train_end", required=True, help="Training end date (YYYY-MM-DD)")
-    parser.add_argument("--test_start", required=True, help="Testing start date (YYYY-MM-DD)")
-    parser.add_argument("--test_end", required=True, help="Testing end date (YYYY-MM-DD)")
-    parser.add_argument("--epochs", type=int, default=1, help="Number of training epochs")
-    args = parser.parse_args()
-    train_and_backtest(args)
+    train_and_backtest()
