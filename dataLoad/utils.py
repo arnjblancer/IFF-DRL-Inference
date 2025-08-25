@@ -34,14 +34,20 @@ def preProcessor(data, start_date='2007-01-01', end_date='2017-12-31'):
         input_data['Date'] = pd.to_datetime(input_data['Date'])
         input_data = input_data.loc[(input_data['Date'] >= start_date) & (input_data['Date'] <= end_date)]
         input_data = input_data[-input_data.Volume.isin([0])]
-        input_data = input_data.drop(['Original Price'], axis=1)
+        # Drop duplicated weekly columns and the unused Original Price column so that
+        # only daily OHLCV features remain. This matches the expected five-channel
+        # input of the model.
+        input_data = input_data.drop(
+            ['Open.1', 'High.1', 'Low.1', 'Adj Close.1', 'Volume.1', 'Original Price'],
+            axis=1,
+        )
         df_stamp = input_data[['Date']]
         data_stamp = time_features(df_stamp, timeenc=1, freq='h')
         return_data = input_data
         input_data = input_data.drop(['Date'], axis=1)
 
         input_data.reset_index(drop=True, inplace=True)
-        return None, return_data,np.array(input_data), np.array(data_stamp)
+        return None, return_data, np.array(input_data), np.array(data_stamp)
 
 
 
