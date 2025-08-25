@@ -26,8 +26,12 @@ class RLDataSet(Dataset):
         self.day_values = []
         self.week_values = []
         self.start_point = cfg.input.start_point
-        _,_, data, self.data_stamp = preProcessor(pd.read_csv(csvFilePath), startDate, endDate)
-        _data, _priceTMinus1, _priceToday, _PriceTPlusN, _mask = self.splitData(data,self.data_stamp, cfg.input.length, cfg.output.length)
+        _, _, data, self.data_stamp = preProcessor(pd.read_csv(csvFilePath), startDate, endDate)
+        if data.shape[1] == 10:
+            data = data[:, :5]
+        _data, _priceTMinus1, _priceToday, _PriceTPlusN, _mask = self.splitData(
+            data, self.data_stamp, cfg.input.length, cfg.output.length
+        )
         self.datas += _data
         self.PriceTMinus1 += _priceTMinus1
         self.PriceT += _priceToday
