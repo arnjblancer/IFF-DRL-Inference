@@ -1,0 +1,8 @@
+torch==2.8.0
+omegaconf
+tqdm
+numpy
+pandas
+matplotlib
+tabulate
+pillow
